@@ -10,7 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import BallotIcon from '@material-ui/icons/Ballot';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Modal from '@material-ui/core/Modal';
@@ -21,7 +21,8 @@ import SearchComponent from './SearchComponent';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from "react-router-dom";
 import { selectAuthentication, doLogin, doLogout } from '../../authentication/authenticationSlice';
-import { selectCartState, doCartLoad } from '../../purchasing/shoppingCartSlice';
+import { selectCartState, doCartLoad, doCartClear } from '../../purchasing/shoppingCartSlice';
+import { AccountCircle } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -172,7 +173,9 @@ export default function Header() {
   const onLogoutRequest = () => {
     handleUserMenuClose();
     handleMobileMenuClose();
-    dispatch(doLogout(() => {}));
+    dispatch(doLogout(() => {
+      dispatch(doCartClear());
+    }));
   }
 
   const handleLoginModalOpen = () => {
@@ -204,6 +207,12 @@ export default function Header() {
     history.push('/cart');
   };
 
+  const onOrdersClick = () => {
+    setMenuAnchorEl(null);
+    handleMobileMenuClose();
+    history.push('/orders');
+  }
+
   useEffect(() => {
     setTimeout(() => {
       if (authentication.isAuthenticated) {
@@ -223,7 +232,7 @@ export default function Header() {
       open={isMenuOpen}
       onClose={handleUserMenuClose}
     >
-      <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={onOrdersClick}>Orders</MenuItem>
       <MenuItem onClick={onLogoutRequest}>Logout</MenuItem>
     </Menu>
   ) : (
@@ -262,16 +271,16 @@ export default function Header() {
         </IconButton>
         <p>Cart</p>
       </MenuItem>
-      <MenuItem onClick={handleUserMenuOpen}>
+      <MenuItem onClick={onOrdersClick}>
         <IconButton
           aria-label="account of current user"
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
         >
-          <AccountCircle />
+          <BallotIcon />
         </IconButton>
-        <p>Profile</p>
+        <p>Orders</p>
       </MenuItem>
       <MenuItem onClick={onLogoutRequest}>
         <IconButton
@@ -307,32 +316,6 @@ export default function Header() {
         <p>Login</p>
       </MenuItem>
     </Menu>
-  );
-
-  const renderCartIconButton = (cartState.cart.entries.length > 0)? (
-    <IconButton
-      edge="end"
-      aria-label="cart of current user"
-      aria-haspopup="false"
-      onClick={onCartClick}
-      color="inherit"
-    >
-      <Badge color="secondary" badgeContent={cartState.cart.entries.length}>
-        <ShoppingCartIcon />
-      </Badge>
-    </IconButton >
-  ) : (
-    <IconButton
-      edge="end"
-      aria-label="cart of current user"
-      aria-haspopup="false"
-      onClick={onCartClick}
-      color="inherit"
-    >
-      <Badge color="secondary" variant="dot">
-        <ShoppingCartIcon />
-      </Badge>
-    </IconButton >
   );
 
   return (

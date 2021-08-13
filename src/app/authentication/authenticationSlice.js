@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { Credentials } from './model/credentials';
+import { User } from './model/user';
 import axios from 'axios';
 import config from '../../config';
 
@@ -12,7 +13,11 @@ export const authenticationSlice = createSlice({
         isAuthenticated: localStorage.getItem(CREDENTIALS_ITEMNAME) ? true : false,
         isLoginInprogress: false,
         isLogoutInprogress: false,
-        errMess: null
+        errMess: null,
+
+        user: User.EMPTY,
+        isCheckJWTinprogress: true,
+        checkJWTerrMess: null,
     },
     reducers: {
         loginRequest: (state) => {
@@ -58,12 +63,38 @@ export const authenticationSlice = createSlice({
                 isLogoutInprogress: false,
                 errMess: null
             }
-        }
+        },
+
+        checkJWTRequest: (state) => {
+            return {
+                ...state,
+                user: User.EMPTY,
+                isCheckJWTinprogress: true,
+                checkJWTerrMess: null,
+            }
+        },
+        checkJWTSuccess: (state, action) => {
+            return {
+                ...state,
+                user: action.payload,
+                isCheckJWTinprogress: false,
+                checkJWTerrMess: null,
+            }
+        },
+        checkJWTFailure: (state, action) => {
+            return {
+                ...state,
+                user: User.EMPTY,
+                isCheckJWTinprogress: false,
+                checkJWTerrMess: action.payload,
+            }
+        },
     },
 })
 
 // Action creators are generated for each case reducer function
-export const {loginRequest, loginSuccess, loginFailure, logoutRequest, logoutSuccess} = authenticationSlice.actions
+export const {loginRequest, loginSuccess, loginFailure, logoutRequest, logoutSuccess,
+              checkJWTRequest, checkJWTSuccess, checkJWTFailure} = authenticationSlice.actions
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -96,7 +127,35 @@ export const doLogout = (completedCallback) => dispatch => {
     dispatch(logoutRequest());
     localStorage.removeItem(CREDENTIALS_ITEMNAME);
     dispatch(logoutSuccess())
-    completedCallback();
+    completedCallback?.();
+  };
+
+export const doCheckCredentials = (completedCallback) => dispatch => {
+    dispatch(checkJWTRequest());
+
+    let credentials = getCredentials();
+    console.log(credentials);
+
+    let securedAxios = axios.create({
+        headers: { Authorization: `Bearer ${credentials.token}` }
+    });
+
+    securedAxios.get(config.authenticationCheckJWT)
+      .then((response) => {
+          let authResponse = response.data;
+          if (authResponse.success) {
+            dispatch(checkJWTSuccess(authResponse.user));
+            completedCallback?.();
+          } else {
+            dispatch(checkJWTFailure(authResponse.err));
+            doLogout(completedCallback);
+          }
+      })
+      .catch((error) => {
+        console.log(error.message);
+        dispatch(checkJWTFailure(error.message));
+        doLogout(completedCallback);
+      });
   };
 
 // The function below is called a selector and allows us to select a value from

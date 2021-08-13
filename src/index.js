@@ -8,7 +8,7 @@ import "@fontsource/roboto";
 import 'bootstrap-social/bootstrap-social.css';
 import './index.css';
 import App from './App';
-import store from './app/commons/reduxStore';
+import store from './app/commons/redux/reduxStore';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 

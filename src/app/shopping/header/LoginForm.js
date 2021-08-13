@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import { renderTextField } from '../../commons/reduxFormFieldRenderers';
+import { renderTextField } from '../../commons/redux/reduxFormFieldRenderers';
 import { Field, reduxForm } from 'redux-form';
 
 let LoginFormComponent = props => {

@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Cart, Entry } from './model/cart';
 import { CartView, EntryView } from './model/cartview';
 import config from '../../config';
-import { getAuthorizedHttpClient, getHttpClient } from '../commons/httpClient';
+import { getAuthorizedHttpClient, getHttpClient } from '../commons/http/httpClient';
 
 export const shoppingCartSlice = createSlice({
     name: 'shoppingCart',
@@ -45,6 +45,24 @@ export const shoppingCartSlice = createSlice({
                 loadErrMess: action.payload
             }
         },
+
+        clearRequest: (state, action) => {
+            return {
+                ...state,
+                cart: state.cart,
+                isLoadInprogress: state.isLoadInprogress,
+                loadErrMess: null
+            }
+        },
+        clearCompleted: (state, action) => {
+            return {
+                ...state,
+                cart: action.payload,
+                isLoadInprogress: true,
+                loadErrMess: null
+            }
+        },
+
         updateRequest: (state, action) => {
             return {
                 ...state,
@@ -121,9 +139,10 @@ export const shoppingCartSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-    loadRequest, loadCompleted, loadFailure, 
+    loadRequest, loadCompleted, loadFailure,
+    clearRequest, clearCompleted,
     updateRequest, updateCompleted, updateFailure,
-    viewRefreshRequest, viewRefreshCompleted, viewRefreshFailure, 
+    viewRefreshRequest, viewRefreshCompleted, viewRefreshFailure,
     backendUpdateRequest, backendUpdateCompleted, backendUpdateFailure
 } = shoppingCartSlice.actions
 
@@ -133,6 +152,13 @@ export const {
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
 // will call the thunk with the `dispatch` function as the first argument. Async
 // code can then be executed and other actions can be dispatched
+
+export const doCartClear = (completedCallback) => dispatch => {
+    dispatch(clearRequest());
+    let clearedCart = Cart.EMPTY;
+    dispatch(clearCompleted(clearedCart));
+    completedCallback?.(true);
+};
 
 export const doCartLoad = (completedCallback) => dispatch => {
     dispatch(loadRequest());
@@ -156,83 +182,83 @@ export const doCartLoad = (completedCallback) => dispatch => {
             dispatch(loadFailure(error.message));
             completedCallback?.(false);
         })
-  };
+};
 
-  export const doCartAddItem = (itemId, completedCallback) => (dispatch, getState) => {
-      dispatch(updateRequest());
-  
-      const currentCart = getState().shoppingCart.cart;
-      let updatedCart = Cart.fromJSObject(currentCart);
-      updatedCart.addEntryById(itemId);
-  
-      const axiosInstance = getAuthorizedHttpClient(config.purchasingService);
-      let requestBody = updatedCart.toJSObject();
-  
-      axiosInstance.put(config.purchasingService + '/cart', requestBody)
-          .then((response) => {
-              let responseCart = Cart.fromJSObject(response.data);
-              let responseCartPlain = responseCart.toJSObject();
-              dispatch(updateCompleted(responseCartPlain));
-  
-              dispatch(doCartBackendUpdate((updateSuccess) => {
-                  if (updateSuccess) {
-                      dispatch(doCartViewRefresh((updateSuccess) => {
-                          if (updateSuccess) {
-                              completedCallback?.(true);
-                          }
-                          else {
-                              completedCallback?.(false);
-                          }
-                      }))
-                  }
-                  else {
-                      completedCallback?.(false);
-                  }
-              }))
-          })
-          .catch((error) => {
-              dispatch(updateFailure(error.message));
-              completedCallback?.(false);
-          });
-  };
+export const doCartAddItem = (itemId, completedCallback) => (dispatch, getState) => {
+    dispatch(updateRequest());
 
-  export const doCartReset = (completedCallback) => (dispatch) => {
-      dispatch(updateRequest());
-  
-      let updatedCart = Cart.EMPTY;
-  
-      const axiosInstance = getAuthorizedHttpClient(config.purchasingService);
-      let requestBody = updatedCart;
-  
-      axiosInstance.put(config.purchasingService + '/cart', requestBody)
-          .then((response) => {
-              let responseCart = Cart.fromJSObject(response.data);
-              let responseCartPlain = responseCart.toJSObject();
-              dispatch(updateCompleted(responseCartPlain));
-  
-              dispatch(doCartBackendUpdate((updateSuccess) => {
-                  if (updateSuccess) {
-                      dispatch(doCartViewRefresh((updateSuccess) => {
-                          if (updateSuccess) {
-                              completedCallback?.(true);
-                          }
-                          else {
-                              completedCallback?.(false);
-                          }
-                      }))
-                  }
-                  else {
-                      completedCallback?.(false);
-                  }
-              }))
-          })
-          .catch((error) => {
-              dispatch(updateFailure(error.message));
-              completedCallback?.(false);
-          });
-  };
+    const currentCart = getState().shoppingCart.cart;
+    let updatedCart = Cart.fromJSObject(currentCart);
+    updatedCart.addEntryById(itemId);
 
-export const doCartViewRefresh = (completedCallback) => (dispatch, getState)  => {
+    const axiosInstance = getAuthorizedHttpClient(config.purchasingService);
+    let requestBody = updatedCart.toJSObject();
+
+    axiosInstance.put(config.purchasingService + '/cart', requestBody)
+        .then((response) => {
+            let responseCart = Cart.fromJSObject(response.data);
+            let responseCartPlain = responseCart.toJSObject();
+            dispatch(updateCompleted(responseCartPlain));
+
+            dispatch(doCartBackendUpdate((updateSuccess) => {
+                if (updateSuccess) {
+                    dispatch(doCartViewRefresh((updateSuccess) => {
+                        if (updateSuccess) {
+                            completedCallback?.(true);
+                        }
+                        else {
+                            completedCallback?.(false);
+                        }
+                    }))
+                }
+                else {
+                    completedCallback?.(false);
+                }
+            }))
+        })
+        .catch((error) => {
+            dispatch(updateFailure(error.message));
+            completedCallback?.(false);
+        });
+};
+
+export const doCartReset = (completedCallback) => (dispatch) => {
+    dispatch(updateRequest());
+
+    let updatedCart = Cart.EMPTY;
+
+    const axiosInstance = getAuthorizedHttpClient(config.purchasingService);
+    let requestBody = updatedCart;
+
+    axiosInstance.put(config.purchasingService + '/cart', requestBody)
+        .then((response) => {
+            let responseCart = Cart.fromJSObject(response.data);
+            let responseCartPlain = responseCart.toJSObject();
+            dispatch(updateCompleted(responseCartPlain));
+
+            dispatch(doCartBackendUpdate((updateSuccess) => {
+                if (updateSuccess) {
+                    dispatch(doCartViewRefresh((updateSuccess) => {
+                        if (updateSuccess) {
+                            completedCallback?.(true);
+                        }
+                        else {
+                            completedCallback?.(false);
+                        }
+                    }))
+                }
+                else {
+                    completedCallback?.(false);
+                }
+            }))
+        })
+        .catch((error) => {
+            dispatch(updateFailure(error.message));
+            completedCallback?.(false);
+        });
+};
+
+export const doCartViewRefresh = (completedCallback) => (dispatch, getState) => {
     dispatch(viewRefreshRequest());
 
     let cartData = getState().shoppingCart.cart;
@@ -249,22 +275,22 @@ export const doCartViewRefresh = (completedCallback) => (dispatch, getState)  =>
 
     let cartViewData = new CartView([]);
     Promise.all(cartEntryProductDataPromises)
-    .then((productResponses) => {
-        for (const productResponse of productResponses) {
-            let entry = cartEntriesProductIdMap[productResponse.data.id];
-            let entryView = new EntryView(productResponse.data, entry.quantity);
+        .then((productResponses) => {
+            for (const productResponse of productResponses) {
+                let entry = cartEntriesProductIdMap[productResponse.data.id];
+                let entryView = new EntryView(productResponse.data, entry.quantity);
 
-            cartViewData.append(entryView);
-        }
+                cartViewData.append(entryView);
+            }
 
-        dispatch(viewRefreshCompleted(cartViewData.toJSObject()));
-        completedCallback?.(true);
-    })
-    .catch((error) => {
-        dispatch(viewRefreshFailure(error.message));
-        completedCallback?.(false);
-    })
-  };
+            dispatch(viewRefreshCompleted(cartViewData.toJSObject()));
+            completedCallback?.(true);
+        })
+        .catch((error) => {
+            dispatch(viewRefreshFailure(error.message));
+            completedCallback?.(false);
+        })
+};
 
 export const doCartBackendUpdate = (completedCallback) => (dispatch, getState) => {
     dispatch(backendUpdateRequest());
@@ -275,16 +301,16 @@ export const doCartBackendUpdate = (completedCallback) => (dispatch, getState) =
     let requestBody = cartData;
 
     axiosInstance.put(config.purchasingService + '/cart', requestBody)
-      .then((response) => {
-          let responseCart = response.data;
-          dispatch(backendUpdateCompleted(responseCart));
-          completedCallback?.(true);
-      })
-      .catch((error) => {
-        dispatch(backendUpdateFailure(error.message));
-        completedCallback?.(false);
-      });
-  };
+        .then((response) => {
+            let responseCart = response.data;
+            dispatch(backendUpdateCompleted(responseCart));
+            completedCallback?.(true);
+        })
+        .catch((error) => {
+            dispatch(backendUpdateFailure(error.message));
+            completedCallback?.(false);
+        });
+};
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

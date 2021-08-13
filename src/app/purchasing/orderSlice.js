@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Cart, Entry } from './model/cart';
+import { Cart } from './model/cart';
 import config from '../../config';
-import { getAuthorizedHttpClient, getHttpClient } from '../commons/httpClient';
+import { getAuthorizedHttpClient } from '../commons/http/httpClient';
 
 export const orderSlice = createSlice({
     name: 'order',
@@ -109,7 +109,6 @@ export const doOrderCreate = (completedCallback) => (dispatch, getState) => {
 
     axiosInstance.post(config.purchasingService + '/orders', requestBody)
         .then((response) => {
-            console.log(response);
             dispatch(orderCreateCompleted(response.data));
             completedCallback?.(true);
         })

@@ -6,7 +6,7 @@ import { doLoadReferencedProducts, selectCartState } from '../../purchasing/shop
 import Grid from '@material-ui/core/Grid';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Loader } from '../../commons/LoaderComponent';
+import { Loader } from '../../commons/components/LoaderComponent';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';

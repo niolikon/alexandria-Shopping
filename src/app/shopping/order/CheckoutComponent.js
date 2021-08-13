@@ -6,7 +6,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { Loader } from '../../commons/LoaderComponent';
+import { Loader } from '../../commons/components/LoaderComponent';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SummaryCartView from './SummaryCart';
 import ShipmentForm from './ShipmentForm';

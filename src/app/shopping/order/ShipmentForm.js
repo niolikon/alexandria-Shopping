@@ -1,7 +1,7 @@
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { renderTextField } from '../../commons/reduxFormFieldRenderers';
+import { renderTextField } from '../../commons/redux/reduxFormFieldRenderers';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isValid } from 'redux-form';
 

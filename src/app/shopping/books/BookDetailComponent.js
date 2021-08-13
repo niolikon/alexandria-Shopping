@@ -67,14 +67,10 @@ function ImagesCard(props) {
 
     const handlePrevClick = () => {
         imageIdx = (imageIdx + images.length - 1) % images.length;
-        console.log("imageIdx: " + imageIdx);
-        console.log("imageUrl: " + images[imageIdx]);
     }
 
     const handleNextClick = () => {
         imageIdx = (imageIdx + 1) % images.length;
-        console.log("imageIdx: " + imageIdx);
-        console.log("imageUrl: " + images[imageIdx]);
     }
 
     if (images.length === 0) {
@@ -202,6 +198,8 @@ function BookDetail(props) {
 
     useEffect(() => {
         dispatch(doLoadBook(id));
+        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return(
