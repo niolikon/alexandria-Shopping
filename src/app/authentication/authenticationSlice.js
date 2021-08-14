@@ -134,8 +134,6 @@ export const doCheckCredentials = (completedCallback) => dispatch => {
     dispatch(checkJWTRequest());
 
     let credentials = getCredentials();
-    console.log(credentials);
-
     let securedAxios = axios.create({
         headers: { Authorization: `Bearer ${credentials.token}` }
     });
