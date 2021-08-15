@@ -76,6 +76,20 @@ export class Cart {
         this.entries.push(entry);
     }
 
+    removeEntry(entry:Entry) {
+        this.entries = Object.assign([], this.entries);
+
+        let entryIdx = '-1';
+        for (let idx in this.entries) {
+            if (this.entries[idx].productId === entry.productId) {
+                entryIdx = idx;
+            }
+        }
+        if (entryIdx !== '-1') {
+            this.entries.splice(parseInt(entryIdx), 1);
+        }
+    }
+
     toJSObject():any {
         let jsoEntries = this.entries.map((entry:Entry) => entry.toJSObject());
 
