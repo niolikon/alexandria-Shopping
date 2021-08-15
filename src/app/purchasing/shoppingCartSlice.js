@@ -222,6 +222,51 @@ export const doCartAddItem = (itemId, completedCallback) => (dispatch, getState)
         });
 };
 
+export const doCartSetItemQuantity = (itemId, quantity, completedCallback) => (dispatch, getState) => {
+    dispatch(updateRequest());
+
+    const currentCart = getState().shoppingCart.cart;
+    let updatedCart = Cart.fromJSObject(currentCart);
+    let entry = updatedCart.getEntryById(itemId);
+
+    if (quantity > 0) {
+        entry.quantity = quantity;
+        updatedCart.updateEntry(entry);
+    } else {
+        updatedCart.removeEntry(entry);
+    }
+
+    const axiosInstance = getAuthorizedHttpClient(config.purchasingService);
+    let requestBody = updatedCart.toJSObject();
+
+    axiosInstance.put(config.purchasingService + '/cart', requestBody)
+        .then((response) => {
+            let responseCart = Cart.fromJSObject(response.data);
+            let responseCartPlain = responseCart.toJSObject();
+            dispatch(updateCompleted(responseCartPlain));
+
+            dispatch(doCartBackendUpdate((updateSuccess) => {
+                if (updateSuccess) {
+                    dispatch(doCartViewRefresh((updateSuccess) => {
+                        if (updateSuccess) {
+                            completedCallback?.(true);
+                        }
+                        else {
+                            completedCallback?.(false);
+                        }
+                    }))
+                }
+                else {
+                    completedCallback?.(false);
+                }
+            }))
+        })
+        .catch((error) => {
+            dispatch(updateFailure(error.message));
+            completedCallback?.(false);
+        });
+};
+
 export const doCartReset = (completedCallback) => (dispatch) => {
     dispatch(updateRequest());
 

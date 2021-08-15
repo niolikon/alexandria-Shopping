@@ -2,13 +2,17 @@ import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from "react-router-dom";
-import { doLoadReferencedProducts, selectCartState } from '../../purchasing/shoppingCartSlice';
+import { doCartSetItemQuantity, selectCartState } from '../../purchasing/shoppingCartSlice';
 import Grid from '@material-ui/core/Grid';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Loader } from '../../commons/components/LoaderComponent';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import config from '../../../config';
 
@@ -23,14 +27,26 @@ const useStyles = makeStyles((theme) => ({
       maxWidth: '100%',
       maxHeight: '100%',
     },
+    formControl: {
+        margin: theme.spacing(1),
+        width: '100px'
+    },
 }));
 
 function EntryView({entry}) {
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const product = entry.productData;
     let imageSrc = (product.imageIds.length > 0)? config.inventoryService + '/images/' + product.imageIds[0]: '';
     let imageAlt = 'Product ' + product.id;
+
+    let quantityOptionValues = [...Array(entry.quantity+10).keys()];
+    let quantityOptionMenuItems = quantityOptionValues.map((number) => (<MenuItem value={String(number)}>{number}</MenuItem>));
+
+    const handleQuantityChange = (event) => {
+        dispatch(doCartSetItemQuantity(entry.productData.id, event.target.value, (updateSuccess) => {}));
+    }
 
     return (
         <Grid item container xs direction="row">
@@ -40,8 +56,8 @@ function EntryView({entry}) {
                 </ButtonBase>
             </Grid>
             <Grid item xs={12} sm={9} md={10}>
-                <Grid item xs container direction="column" spacing={2}>
-                    <Grid item xs>
+                <Grid container direction="row" justifyContent="space-between" alignItems="flex-end" spacing={2}>
+                    <Grid item xs={12}>
                         <Typography gutterBottom variant="subtitle1">
                             {product.name}
                         </Typography>
@@ -49,10 +65,24 @@ function EntryView({entry}) {
                             {product.description}
                         </Typography>
                     </Grid>
-                    <Grid item xs>
+                    <Grid item xs={10}>
                         <Typography variant="body2" color="textSecondary">
                             {product.price}&nbsp;&euro; &times; {entry.quantity}
                         </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <FormControl variant="outlined" className={classes.formControl}>
+                            <InputLabel id="{entry.productData.id}-quantity-label">Change quantity</InputLabel>
+                            <Select
+                                labelId="{entry.productData.id}-quantity-select-label"
+                                id="{entry.productData.id}-quantity-select"
+                                value={entry.quantity}
+                                onChange={handleQuantityChange}
+                                label="Quantity"
+                            >
+                                {quantityOptionMenuItems}
+                            </Select>
+                        </FormControl>
                     </Grid>
                 </Grid>
             </Grid>
