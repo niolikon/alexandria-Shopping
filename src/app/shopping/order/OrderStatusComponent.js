@@ -22,24 +22,29 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         margin: 'auto',
+        marginBottom: '20px'
     },
+    statusCell: {
+        marginBottom: '20px'
+    }
 }));
 
 function SummaryEntriesView({ order }) {
+    const orderHistoryState = useSelector(selectOrderHistoryState);
+    const orderProductsView = orderHistoryState.productsViews;
+
     return (
         <TableContainer component={Paper}>
             <Table aria-label="spanning table">
                 <TableHead>
                     <TableRow>
-                        <TableCell align="right">Product ID</TableCell>
-                        <TableCell align="right">Quantity</TableCell>
+                        <TableCell align="center">Items ordered</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {order.entries.map((entry) => (
                         <TableRow key={entry.productId}>
-                            <TableCell align="right">{entry.productId}</TableCell>
-                            <TableCell align="right">{entry.quantity}</TableCell>
+                            <TableCell align="center">{orderProductsView[entry.productId].name} &times; {entry.quantity}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -54,9 +59,14 @@ function OrderItem({ order }) {
     return (
         <Paper className={classes.paper}>
             <Grid container direction="row">
-                <Grid item sm={12}>
+                <Grid item sm={6}>
                     <Typography variant="subtitle2">
-                        ID: {order.id} Status: {order.status}
+                        ID: {order.id}
+                    </Typography>
+                </Grid>
+                <Grid item sm={6}>
+                    <Typography variant="subtitle2" align="right" className={classes.statusCell}>
+                        Status: {order.status}
                     </Typography>
                 </Grid>
                 <Grid item sm={8} container direction="row" spacing={2}>
