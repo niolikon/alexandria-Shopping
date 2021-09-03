@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,11 +11,14 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import { selectProductDetailsState, doLoadProduct } from '../../inventory/inventoryProductDetailsSlice';
 import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
 import config from '../../../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Typography } from '@material-ui/core';
+import { selectAuthentication } from '../../authentication/authenticationSlice';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -58,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function ImagesCard(props) {
     const classes = useStyles();
@@ -108,13 +114,45 @@ function ProductView(props) {
     const classes = useStyles();
     const dispatch = useDispatch();
 
+    const authenticationState = useSelector(selectAuthentication);
+
     const product = props.product;
     const images = product.imageIds.map( (id) => { 
         return (config.inventoryService + '/images/' + id);
     });
 
+
+    const [snackbarState, setSnackbarState] = useState({
+        open: false,
+        severity: "success",
+        message: ""
+    });
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackbarState({...snackbarState, open: false});
+    };
+
     const handleAddToCart = (productId) => {
-        dispatch(doCartAddItem(productId, () => {}));
+        dispatch(doCartAddItem(productId, (addSuccess) => {
+            if (addSuccess) {
+                setSnackbarState({
+                    open: true,
+                    severity: "success",
+                    message: "Item successfully added to cart!"
+                });
+            }
+            else {
+                setSnackbarState({
+                    open: false,
+                    severity: "error",
+                    message: "Item could not be added to cart!"
+                });
+            }
+        }));
     }
 
     let isAvailable = (product.availability && product.availability > 0);
@@ -126,7 +164,13 @@ function ProductView(props) {
 
     let addToCartButton = (isAvailable)? (
         <div className={classes.actions}>
-            <Button variant="contained" onClick={() => handleAddToCart(product.id)} color="primary">Add to cart</Button>
+            <Button variant="contained" onClick={() => handleAddToCart(product.id)} 
+            disabled={authenticationState.isAuthenticated === false} color="primary">Add to cart</Button>
+            <Snackbar open={snackbarState.open} autoHideDuration={5000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarState.severity}>
+                    {snackbarState.message}
+                </Alert>
+            </Snackbar>
         </div>
     ) : (
         <React.Fragment />
@@ -201,15 +245,9 @@ function ProductDetail(props) {
 
     return(
         <div className="container">
-            <div className="row">
-                <div className="col">
-            Product details is working!
-                </div>
-            </div>
-                
             <div className="row row-content">
                 <ProductLoader loaderState={detailsState}>
-                    <ProductView product={detailsState.product}/>
+                    <ProductView product={detailsState.product} />
                 </ProductLoader>
             </div>
         </div>
