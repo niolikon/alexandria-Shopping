@@ -7,9 +7,14 @@ import { doSearch } from '../../inventory/inventorySearchSlice';
 export default function SearchComponent(props) {
 
     const [searchKey, setSearchKey] = useState('');
+    const clearValue = () => { setSearchKey(''); }
 
     const dispatch = useDispatch();
     const history = useHistory();
+
+    if (props.reference !== undefined) {
+        props.reference.current.clearValue = clearValue;
+    }
 
     const onSubmitHandler = (event) => {
         event.preventDefault();

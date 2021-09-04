@@ -16,6 +16,7 @@ import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
 import config from '../../../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Typography } from '@material-ui/core';
+import BackButton from '../../commons/components/BackButtonComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -201,16 +202,13 @@ function ProductDetail(props) {
 
     return(
         <div className="container">
-            <div className="row">
-                <div className="col">
-            Product details is working!
-                </div>
-            </div>
-                
             <div className="row row-content">
                 <ProductLoader loaderState={detailsState}>
                     <ProductView product={detailsState.product}/>
                 </ProductLoader>
+            </div>
+            <div className="row back-button-container">
+                <BackButton></BackButton>
             </div>
         </div>
     );
