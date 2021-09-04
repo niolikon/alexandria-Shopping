@@ -11,7 +11,7 @@ const BackButton = (props) => {
       <React.Fragment>
         <Tooltip title={tooltipText}>
           <IconButton color="primary" aria-label={tooltipText} onClick={() => history.goBack()} >
-            <i class="fas fa-angle-double-left fa-2x"></i>
+            <i className="fas fa-angle-double-left fa-2x"></i>
           </IconButton>
         </Tooltip>
       </React.Fragment >
