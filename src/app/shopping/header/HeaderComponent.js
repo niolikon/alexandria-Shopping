@@ -330,6 +330,8 @@ export default function Header() {
     </Menu>
   );
 
+  const cartIconDisabled = (!authentication.isAuthenticated) || cartState.isLoadInprogress || (cartState.loadErrMess != null);
+
   return (
     <div className={classes.grow}>
       <AppBar position="static">
@@ -362,7 +364,7 @@ export default function Header() {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <CartIconButton onClick={onCartClick} disabled={(cartState.isLoadInprogress || cartState.loadErrMess != null)}/>
+            <CartIconButton onClick={onCartClick} disabled={cartIconDisabled}/>
             <IconButton
               edge="end"
               aria-label="account of current user"

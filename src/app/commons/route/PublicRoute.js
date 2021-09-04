@@ -8,7 +8,7 @@ const PublicRoute = ({ component: Component, ...rest }) => {
 
     useEffect(() => {
       dispatch(doCheckCredentials())
-    }, []);
+    });
 
     return (
         <Route {...rest} render={
