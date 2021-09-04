@@ -146,13 +146,12 @@ export const doCheckCredentials = (completedCallback) => dispatch => {
             completedCallback?.();
           } else {
             dispatch(checkJWTFailure(authResponse.err));
-            doLogout(completedCallback);
+            dispatch(doLogout(() => completedCallback?.()));
           }
       })
       .catch((error) => {
-        console.log(error.message);
         dispatch(checkJWTFailure(error.message));
-        doLogout(completedCallback);
+        dispatch(doLogout(() => completedCallback?.()));
       });
   };
 

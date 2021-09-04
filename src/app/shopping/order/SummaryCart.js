@@ -1,4 +1,3 @@
-import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,11 +7,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import config from '../../../config';
 
-const useStyles = makeStyles((theme) => ({}));
-
 function SummaryCartView({cartView}) {
-    const classes = useStyles();
-
     const localTaxes = config.taxes;
     
     const formatAmount = (money) => {

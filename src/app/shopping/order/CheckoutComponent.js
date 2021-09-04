@@ -67,20 +67,21 @@ function ProcessView({cartState}) {
 
     const handleNext = () => {
         switch(activeStep) {
-            case 0:
-                dispatch(doOrderSetCart(cartState.cart, () => {
-                    flagStepAsCompleted(activeStep);
-                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                }));
-                break;
-            case 1:
-                doShippingFormSubmit(formState.shipmentForm?.values);
-                break;
             case 2:
                 dispatch(doOrderCreate(() => {
                     dispatch(doCartReset(() => {
                         flagStepAsCompleted(activeStep);
                     }));
+                }));
+                break;
+            case 1:
+                doShippingFormSubmit(formState.shipmentForm?.values);
+                break;
+            case 0:
+            default:
+                dispatch(doOrderSetCart(cartState.cart, () => {
+                    flagStepAsCompleted(activeStep);
+                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
                 }));
                 break;
         }
@@ -118,12 +119,6 @@ function ProcessView({cartState}) {
 
     let processViewPanel = (<React.Fragment/>);
     switch (activeStep) {
-        case 0:
-            processViewPanel = (<SummaryCartView cartView={cartState.cartView} />);
-            break;
-        case 1:
-            processViewPanel = (<ShipmentForm onSubmit={(event) => doShippingFormSubmit(event)} />);
-            break;
         case 2:
             processViewPanel = (isStepCompleted(2))? (
                 <Grid container direction="row">
@@ -139,6 +134,13 @@ function ProcessView({cartState}) {
                     </Grid>
                 </Grid>
             );
+            break;
+        case 1:
+            processViewPanel = (<ShipmentForm onSubmit={(event) => doShippingFormSubmit(event)} />);
+            break;
+        case 0:
+        default:
+            processViewPanel = (<SummaryCartView cartView={cartState.cartView} />);
             break;
     }
 
@@ -190,10 +192,7 @@ function ProcessView({cartState}) {
 
 function Checkout(props) {
     const cartState = useSelector(selectCartState);
-    const cartView = cartState.cartView;
-
-    let cartViewHasEntries = (cartView.entries !== undefined && (cartView.entries.length > 0));
-
+    
     return(
         <div className="container">
             <div className="row">
