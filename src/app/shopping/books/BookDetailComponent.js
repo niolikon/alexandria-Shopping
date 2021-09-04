@@ -70,19 +70,17 @@ function ImagesCard(props) {
     const classes = useStyles();
     
     let images = props.images;
-    let imageIdx = 0;
+    if (images.length === 0) {
+        images.push('/image-not-available.png');
+    }
+    const [imageIdx, setImageIdx] = useState(0);
 
     const handlePrevClick = () => {
-        imageIdx = (imageIdx + images.length - 1) % images.length;
+        setImageIdx((imageIdx + images.length - 1) % images.length);
     }
 
     const handleNextClick = () => {
-        imageIdx = (imageIdx + 1) % images.length;
-    }
-
-    if (images.length === 0) {
-        images.push('/image-not-available.png');
-        imageIdx = 0;
+        setImageIdx((imageIdx + 1) % images.length);
     }
 
     return (
@@ -96,12 +94,14 @@ function ImagesCard(props) {
                     <IconButton 
                         aria-label="previous image"
                         onClick={handlePrevClick}
+                        disabled={images.length < 2}
                     >
                         <ArrowLeftIcon />
                     </IconButton>
                     <IconButton 
                         aria-label="next image"
                         onClick={handleNextClick}
+                        disabled={images.length < 2}
                     >
                         <ArrowRightIcon />
                     </IconButton>
