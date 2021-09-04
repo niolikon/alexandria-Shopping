@@ -231,7 +231,7 @@ export default function Header() {
         dispatch(doCartLoad());
       }
     }, 1000);
-  }, []);
+  }, [authentication, dispatch]);
 
   const menuId = 'primary-search-account-menu';
   const renderUserMenu = (authentication.isAuthenticated)? (

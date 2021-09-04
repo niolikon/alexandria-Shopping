@@ -19,9 +19,9 @@ function Main(props) {
             <Header />
                 <Switch location={props.location}>
                     <PublicRoute path="/home" component={Home} />
-                    <PublicRoute path="/products" component={ProductList} />
+                    <PublicRoute exact path="/products" component={ProductList} />
                     <PublicRoute path="/products/:id" component={ProductDetail} />
-                    <PublicRoute path="/books" component={BookList} />
+                    <PublicRoute exact path="/books" component={BookList} />
                     <PublicRoute path="/books/:id" component={BookDetail} />
                     <PublicRoute path="/search" component={ProductSearch} />
                     <PrivateRoute path="/cart" component={Cart} />

@@ -104,7 +104,7 @@ export const doHistoryViewRefresh = (completedCallback, history) => (dispatch, g
     let currentHistory = (history === undefined)? getState().orderHistory.history: history;
 
     let orderedProductIdSet = new Set();
-    currentHistory.map( (order) => {
+    currentHistory.forEach( (order) => {
         let productsInOrder = order.entries.map((entry) => entry.productId);
         productsInOrder.forEach(productId => orderedProductIdSet.add(productId));
     });

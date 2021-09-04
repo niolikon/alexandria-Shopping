@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Cart, Entry } from './model/cart';
+import { Cart } from './model/cart';
 import { CartView, EntryView } from './model/cartview';
 import config from '../../config';
 import { getAuthorizedHttpClient, getHttpClient } from '../commons/http/httpClient';

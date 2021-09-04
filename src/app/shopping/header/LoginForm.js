@@ -3,7 +3,7 @@ import { renderTextField } from '../../commons/redux/reduxFormFieldRenderers';
 import { Field, reduxForm } from 'redux-form';
 
 let LoginFormComponent = props => {
-    const { handleSubmit, pristine, reset, submitting, valid } = props;
+    const { handleSubmit, pristine, submitting, valid } = props;
     let isInvalid = !valid;
 
     return (

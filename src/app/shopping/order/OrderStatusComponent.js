@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
-import { Fade, Stagger } from 'react-animation-components';
+import { Fade } from 'react-animation-components';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -97,7 +97,7 @@ function OrderStatus(props) {
 
     useEffect(() => {
         dispatch(doLoadHistory());
-    }, [])
+    }, [dispatch])
 
 
     let orderHistory = orderHistoryState.history.map((order) => {

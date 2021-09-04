@@ -126,7 +126,7 @@ function ProductSearch(props) {
     
     useEffect( () => {
         dispatch(doBookSearch());
-    }, []);
+    }, [dispatch]);
     
     let searchResults = searchState.search.results.map((book) => {
         return (

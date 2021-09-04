@@ -1,25 +1,12 @@
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 import { renderTextField } from '../../commons/redux/reduxFormFieldRenderers';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, isValid } from 'redux-form';
-
-const useStyles = makeStyles((theme) => ({
-    button: {
-        marginRight: theme.spacing(1),
-    },
-    submitButton: {
-      marginTop: 20,
-    },
-}));
+import { Field, reduxForm } from 'redux-form';
 
 let ShipmentForm = props => {
-    const classes = useStyles();
 
-    const { handleSubmit, pristine, reset, submitting, valid } = props;
-    let isInvalid = !valid;
-
+    const { handleSubmit } = props;
+    
     return (
         <form onSubmit={handleSubmit}>
             <Grid container direction="row">

@@ -242,7 +242,7 @@ function ProductDetail(props) {
 
     useEffect(() => {
         dispatch(doLoadProduct(id));
-    }, []);
+    }, [dispatch, id]);
 
     return(
         <div className="container">

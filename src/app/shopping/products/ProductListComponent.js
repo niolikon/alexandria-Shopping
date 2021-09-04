@@ -130,7 +130,7 @@ function ProductList(props) {
     
     useEffect( () => {
         dispatch(doSearch());
-    }, []);
+    }, [dispatch]);
 
     let searchResults = searchState.search.results.map((product) => {
         return (

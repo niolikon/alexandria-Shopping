@@ -148,13 +148,13 @@ function CarouselSlide(props) {
 
 function FeaturedCarousel(props) {
 
-    const [autoPlay, setAutoPlay] = useState(true);
-    const [animation, setAnimation] = useState('slide');
-    const [indicators, setIndicators] = useState(true);
-    const [timeout, setTimeout] = useState(500);
-    const [navButtonsAlwaysVisible, setNavButtonsAlwaysVisible] = useState(false);
-    const [navButtonsAlwaysInvisible, setNavButtonsAlwaysInvisible] = useState(false);
-    const [cycleNavigation, setCycleNavigation] = useState(true);
+    const [autoPlay, ] = useState(true);
+    const [animation, ] = useState('slide');
+    const [indicators, ] = useState(true);
+    const [timeout, ] = useState(500);
+    const [navButtonsAlwaysVisible, ] = useState(false);
+    const [navButtonsAlwaysInvisible, ] = useState(false);
+    const [cycleNavigation, ] = useState(true);
 
     const dispatch = useDispatch();
     const featuredBooksState = useSelector(selectFeaturedBooksState);
@@ -163,7 +163,7 @@ function FeaturedCarousel(props) {
     useEffect(() => {
         dispatch(doLoadBooks());
         dispatch(doLoadProducts());
-    }, []);
+    }, [dispatch]);
 
     let carouselSlides = [
         {
