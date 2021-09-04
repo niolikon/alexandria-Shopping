@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
     search: {
       position: 'relative',
+      display: 'flex',
       borderRadius: theme.shape.borderRadius,
       backgroundColor: alpha(theme.palette.common.white, 0.15),
       '&:hover': {
@@ -70,8 +71,17 @@ const useStyles = makeStyles((theme) => ({
       paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
       transition: theme.transitions.create('width'),
       width: '100%',
+      [theme.breakpoints.up('sm')]: {
+        width: '20ch',
+        '&:focus': {
+          width: '30ch',
+        }
+      },
       [theme.breakpoints.up('md')]: {
         width: '20ch',
+        '&:focus': {
+          width: '70ch',
+        }
       },
     },
     sectionDesktop: {
@@ -133,6 +143,9 @@ function CartIconButton(props) {
 
 export default function Header() {
   const classes = useStyles();
+  const history = useHistory();
+
+  const searchRef = useRef({});
 
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const isMenuOpen = Boolean(menuAnchorEl);
@@ -144,8 +157,6 @@ export default function Header() {
   const dispatch = useDispatch();
   const authentication = useSelector(selectAuthentication);
   const cartState = useSelector(selectCartState);
-
-  const history = useHistory();
   
   const handleUserMenuOpen = (event) => {
     setMenuAnchorEl(event.currentTarget);
@@ -198,6 +209,7 @@ export default function Header() {
   };
 
   const onLogoClick = () => {
+    searchRef.current.clearValue();
     history.push('/home');
   }
 
@@ -342,6 +354,8 @@ export default function Header() {
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
+
+              reference={searchRef}
 
               inputProps={{ 'aria-label': 'search' }}
             />

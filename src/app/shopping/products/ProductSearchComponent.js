@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { Fade, Stagger } from 'react-animation-components';
@@ -12,6 +13,7 @@ import config from '../../../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Media } from 'reactstrap';
 import { selectSearchState } from '../../inventory/inventorySearchSlice';
+import { selectAuthentication } from '../../authentication/authenticationSlice';
 import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
 function ProductItem({product}) {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const history = useHistory();
+
+    const authenticationState = useSelector(selectAuthentication);
 
     let imageSrc = (product.imageIds.length > 0)? config.inventoryService + '/images/' + product.imageIds[0]: '';
     let imageAlt = 'Product ' + product.id;
@@ -45,11 +50,20 @@ function ProductItem({product}) {
         dispatch(doCartAddItem(productId, () => {}));
     }
 
+    const handleGoToProduct = (product) => {
+        if (product.type === 'book') {
+            history.push('/books/' + product.id);
+        }
+        else {
+            history.push('/products/' + product.id);
+        }
+    }
+
     return (
         <Paper className={classes.paper}>
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={3} md={2}>
-                    <ButtonBase className={classes.imageButton}>
+                    <ButtonBase className={classes.imageButton} onClick={() => handleGoToProduct(product)}>
                         <img className={classes.imagePicture} alt={imageAlt} src={imageSrc} />
                     </ButtonBase>
                 </Grid>
@@ -74,7 +88,8 @@ function ProductItem({product}) {
                             <Typography variant="subtitle1">{product.price}&nbsp;&euro;</Typography>
                         </Grid>
                         <Grid item xs={12} sm>
-                            <Button variant="contained" color="primary" onClick={() => handleAddToCart(product.id)}>
+                            <Button variant="contained" color="primary" onClick={() => handleAddToCart(product.id)}
+                                disabled={authenticationState.isAuthenticated === false}>
                                 Add to cart
                             </Button>
                         </Grid>
@@ -133,12 +148,6 @@ function ProductSearch(props) {
 
     return(
         <div className="container">
-            <div className="row">
-                <div className="col">
-            Search is working!
-                </div>
-            </div>
-
             <div className="row justify-contents-start">
                 <div className="col-12">
                     {pageContents}

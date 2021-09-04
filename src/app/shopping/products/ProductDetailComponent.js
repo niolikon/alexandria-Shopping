@@ -19,6 +19,7 @@ import config from '../../../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Typography } from '@material-ui/core';
 import { selectAuthentication } from '../../authentication/authenticationSlice';
+import BackButton from '../../commons/components/BackButtonComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -249,6 +250,9 @@ function ProductDetail(props) {
                 <ProductLoader loaderState={detailsState}>
                     <ProductView product={detailsState.product} />
                 </ProductLoader>
+            </div>
+            <div className="row back-button-container">
+                <BackButton></BackButton>
             </div>
         </div>
     );
