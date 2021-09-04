@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import Carousel from "react-material-ui-carousel";
 import {
@@ -18,6 +18,7 @@ import './style/FeaturedCarousel.scss';
 import config from '../../../config';
 
 function CarouselSlide(props) {
+    const history = useHistory();
     const contentPosition = props.item.ContentPosition ? props.item.ContentPosition : "left";
 
     const slideDataIsLoading = props.item.ContentState.isLoadInprogress;
@@ -26,6 +27,19 @@ function CarouselSlide(props) {
 
     const totalItems = 3;
     const mediaLength = totalItems - 1;
+
+    let viewNowRoute = '/products';
+    switch(props.item.ContentCategory) {
+        case 'books':
+            viewNowRoute = '/books';
+            break;
+            
+        case 'products':
+        default:
+            viewNowRoute = '/products';
+            break;
+
+    }
 
     const content = (
         <Grid item xs={12 / totalItems} key="content">
@@ -38,7 +52,7 @@ function CarouselSlide(props) {
                     {props.item.Caption}
                 </Typography>
 
-                <Button variant="outlined" className="ViewButton">
+                <Button variant="outlined" className="ViewButton" onClick={ () => {history.push(viewNowRoute)}}>
                     View Now
                 </Button>
             </CardContent>
