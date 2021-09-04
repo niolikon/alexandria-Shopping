@@ -14,6 +14,12 @@ body {
   min-height:400px;
 }
 
+.back-button-container {
+  margin:0px auto;
+  padding: 50px 0px 50px 0px;
+  border-bottom: 1px ridge;
+}
+
 .carousel-content {
   margin: 50px 0px;
 }
