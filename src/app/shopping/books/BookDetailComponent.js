@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,8 +11,6 @@ import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import { selectBooksDetailsState, doLoadBook } from '../../inventory/inventoryBookDetailsSlice';
 import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
 import config from '../../../config';
@@ -20,6 +18,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Typography } from '@material-ui/core';
 import { selectAuthentication } from '../../authentication/authenticationSlice';
 import BackButton from '../../commons/components/BackButtonComponent';
+import SnackBar from '../../commons/components/SnackBarComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -61,10 +60,6 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center'
     },
   }));
-
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 function ImagesCard(props) {
     const classes = useStyles();
@@ -117,40 +112,20 @@ function BookView(props) {
 
     const authenticationState = useSelector(selectAuthentication);
 
+    const snackBar = useRef({});
+
     const book = props.book;
     const images = book.imageIds.map( (id) => { 
         return (config.inventoryService + '/images/' + id);
     });
 
-    const [snackbarState, setSnackbarState] = useState({
-        open: false,
-        severity: "success",
-        message: ""
-    });
-
-    const handleSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarState({...snackbarState, open: false});
-    };
-
     const handleAddToCart = (bookId) => {
-        dispatch(doCartAddItem(bookId, (addSuccess) => {
-            if (addSuccess) {
-                setSnackbarState({
-                    open: true,
-                    severity: "success",
-                    message: "Item successfully added to cart!"
-                });
+        dispatch(doCartAddItem(bookId, (success) => {
+            if (success) {
+                snackBar.current.open("Item successfully added to cart!");
             }
             else {
-                setSnackbarState({
-                    open: false,
-                    severity: "error",
-                    message: "Item could not be added to cart!"
-                });
+                snackBar.current.error("Item could not be added to cart!");
             }
         }));
     }
@@ -166,11 +141,7 @@ function BookView(props) {
         <div className={classes.actions}>
             <Button variant="contained" onClick={() => handleAddToCart(book.id)} 
             disabled={authenticationState.isAuthenticated === false} color="primary">Add to cart</Button>
-            <Snackbar open={snackbarState.open} autoHideDuration={5000} onClose={handleSnackbarClose}>
-                <Alert onClose={handleSnackbarClose} severity={snackbarState.severity}>
-                    {snackbarState.message}
-                </Alert>
-            </Snackbar>
+            <SnackBar reference={snackBar}></SnackBar>
         </div>
     ) : (
         <React.Fragment />
@@ -242,9 +213,7 @@ function BookDetail(props) {
 
     useEffect(() => {
         dispatch(doLoadBook(id));
-        
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [dispatch, id]);
 
     return(
         <div className="container">

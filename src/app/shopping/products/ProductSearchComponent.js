@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,6 +15,7 @@ import { Media } from 'reactstrap';
 import { selectSearchState } from '../../inventory/inventorySearchSlice';
 import { selectAuthentication } from '../../authentication/authenticationSlice';
 import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
+import SnackBar from '../../commons/components/SnackBarComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-function ProductItem({product}) {
+function ProductItem({product, snackBar}) {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
@@ -47,7 +48,14 @@ function ProductItem({product}) {
     let imageAlt = 'Product ' + product.id;
 
     const handleAddToCart = (productId) => {
-        dispatch(doCartAddItem(productId, () => {}));
+        dispatch(doCartAddItem(productId, (success) => {
+            if (success) {
+                snackBar.current.open("Item successfully added to cart!");
+            }
+            else {
+                snackBar.current.error("Item could not be added to cart!");
+            }
+        }));
     }
 
     const handleGoToProduct = (product) => {
@@ -127,12 +135,14 @@ function ResultLoader(props) {
 function ProductSearch(props) {
     
     const searchState = useSelector(selectSearchState);
+
+    const snackBar = useRef({});
     
     let searchResults = searchState.search.results.map((product) => {
         return (
             <Fade in key={product.id}>
                 <div className="col-12 mt-2">
-                    <ProductItem product={product} />
+                    <ProductItem product={product} snackBar={snackBar} />
                 </div>
             </Fade>
         );
@@ -151,6 +161,7 @@ function ProductSearch(props) {
             <div className="row justify-contents-start">
                 <div className="col-12">
                     {pageContents}
+                    <SnackBar reference={snackBar}></SnackBar>
                 </div>
             </div>
         </div>

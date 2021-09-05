@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,6 +15,7 @@ import { Media } from 'reactstrap';
 import { selectAuthentication } from '../../authentication/authenticationSlice';
 import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
 import { doBookSearch, selectBookSearchState } from '../../inventory/inventoryBookSearchSlice';
+import SnackBar from '../../commons/components/SnackBarComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-function BookItem({book}) {
+function BookItem({book, snackBar}) {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
@@ -47,7 +48,14 @@ function BookItem({book}) {
     let imageAlt = 'Product ' + book.id;
 
     const handleAddToCart = (bookId) => {
-        dispatch(doCartAddItem(bookId, () => {}));
+        dispatch(doCartAddItem(bookId, (success) => {
+            if (success) {
+                snackBar.current.open("Item successfully added to cart!");
+            }
+            else {
+                snackBar.current.error("Item could not be added to cart!");
+            }
+        }));
     }
 
     const handleGoToBook = (book) => {
@@ -127,12 +135,14 @@ function ProductSearch(props) {
     useEffect( () => {
         dispatch(doBookSearch());
     }, [dispatch]);
+
+    const snackBar = useRef({});
     
     let searchResults = searchState.search.results.map((book) => {
         return (
             <Fade in key={book.id}>
                 <div className="col-12 mt-2">
-                    <BookItem book={book} />
+                    <BookItem book={book} snackBar={snackBar} />
                 </div>
             </Fade>
         );
@@ -151,6 +161,7 @@ function ProductSearch(props) {
             <div className="row justify-contents-start">
                 <div className="col-12">
                     {pageContents}
+                    <SnackBar reference={snackBar}></SnackBar>
                 </div>
             </div>
         </div>

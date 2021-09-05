@@ -25,106 +25,106 @@ import { selectCartState, doCartLoad, doCartClear } from '../../purchasing/shopp
 import { AccountCircle } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
-    grow: {
-      flexGrow: 1,
+  grow: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
     },
-    menuButton: {
-      marginRight: theme.spacing(2),
+  },
+  search: {
+    position: 'relative',
+    display: 'flex',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
-    title: {
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(3),
+      width: 'auto',
+    },
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '20ch',
+      '&:focus': {
+        width: '30ch',
+      }
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+      '&:focus': {
+        width: '70ch',
+      }
+    },
+  },
+  sectionDesktop: {
+    display: 'none',
+    [theme.breakpoints.up('md')]: {
+      display: 'flex',
+    },
+  },
+  sectionMobile: {
+    display: 'flex',
+    [theme.breakpoints.up('md')]: {
       display: 'none',
-      [theme.breakpoints.up('sm')]: {
-        display: 'block',
-      },
     },
-    search: {
-      position: 'relative',
-      display: 'flex',
-      borderRadius: theme.shape.borderRadius,
-      backgroundColor: alpha(theme.palette.common.white, 0.15),
-      '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-      },
-      marginRight: theme.spacing(2),
-      marginLeft: 0,
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(3),
-        width: 'auto',
-      },
-    },
-    searchIcon: {
-      padding: theme.spacing(0, 2),
-      height: '100%',
-      position: 'absolute',
-      pointerEvents: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    inputRoot: {
-      color: 'inherit',
-    },
-    inputInput: {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-      transition: theme.transitions.create('width'),
-      width: '100%',
-      [theme.breakpoints.up('sm')]: {
-        width: '20ch',
-        '&:focus': {
-          width: '30ch',
-        }
-      },
-      [theme.breakpoints.up('md')]: {
-        width: '20ch',
-        '&:focus': {
-          width: '70ch',
-        }
-      },
-    },
-    sectionDesktop: {
-      display: 'none',
-      [theme.breakpoints.up('md')]: {
-        display: 'flex',
-      },
-    },
-    sectionMobile: {
-      display: 'flex',
-      [theme.breakpoints.up('md')]: {
-        display: 'none',
-      },
-    },
-    modal: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    paper: {
-      backgroundColor: theme.palette.background.paper,
-      border: '2px solid #000',
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
-    },
-  }));
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
 
 function CartIconButton(props) {
   const cartState = useSelector(selectCartState);
 
   let cartItems = 0;
-  for(const entry of cartState.cart.entries) {
+  for (const entry of cartState.cart.entries) {
     cartItems += entry.quantity;
   }
 
-  let badgeAndIcon = (cartState.cart.entries.length > 0)? (
+  let badgeAndIcon = (cartState.cart.entries.length > 0) ? (
     <Badge color="secondary" badgeContent={cartItems}>
-        <ShoppingCartIcon />
-      </Badge>
+      <ShoppingCartIcon />
+    </Badge>
   ) : (
     <Badge color="secondary" variant="dot">
-        <ShoppingCartIcon />
-      </Badge>
+      <ShoppingCartIcon />
+    </Badge>
   );
 
   return (
@@ -153,11 +153,11 @@ export default function Header() {
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
-  
+
   const dispatch = useDispatch();
   const authentication = useSelector(selectAuthentication);
   const cartState = useSelector(selectCartState);
-  
+
   const handleUserMenuOpen = (event) => {
     setMenuAnchorEl(event.currentTarget);
   };
@@ -231,10 +231,10 @@ export default function Header() {
         dispatch(doCartLoad());
       }
     }, 1000);
-  }, [authentication, dispatch]);
+  }, [dispatch, authentication.isAuthenticated]);
 
   const menuId = 'primary-search-account-menu';
-  const renderUserMenu = (authentication.isAuthenticated)? (
+  const renderUserMenu = (authentication.isAuthenticated) ? (
     <Menu
       anchorEl={menuAnchorEl}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -262,7 +262,7 @@ export default function Header() {
   );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
-  const renderMobileMenu = (authentication.isAuthenticated)? (
+  const renderMobileMenu = (authentication.isAuthenticated) ? (
     <Menu
       anchorEl={mobileMenuAnchorEl}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -364,7 +364,7 @@ export default function Header() {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <CartIconButton onClick={onCartClick} disabled={cartIconDisabled}/>
+            <CartIconButton onClick={onCartClick} disabled={cartIconDisabled} />
             <IconButton
               edge="end"
               aria-label="account of current user"
@@ -404,10 +404,10 @@ export default function Header() {
         }}
       >
         <Fade in={loginModalOpen}>
-            <div className={classes.paper}>
-              <h2 id="transition-modal-title">LogIn to Alexandria</h2>
-                <LoginForm onSubmit={(event) => handleLoginFormSubmit(event)} />
-            </div>
+          <div className={classes.paper}>
+            <h2 id="transition-modal-title">LogIn to Alexandria</h2>
+            <LoginForm onSubmit={(event) => handleLoginFormSubmit(event)} />
+          </div>
         </Fade>
       </Modal>
     </div>

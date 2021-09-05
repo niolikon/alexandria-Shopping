@@ -10,7 +10,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
   useEffect(() => {
     dispatch(doCheckCredentials())
-  });
+  }, [dispatch, authentication.credentials]);
 
   return (
     <Route {...rest} render={(props) => (

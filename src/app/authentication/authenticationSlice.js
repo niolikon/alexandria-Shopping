@@ -68,7 +68,6 @@ export const authenticationSlice = createSlice({
         checkJWTRequest: (state) => {
             return {
                 ...state,
-                user: User.EMPTY,
                 isCheckJWTinprogress: true,
                 checkJWTerrMess: null,
             }
