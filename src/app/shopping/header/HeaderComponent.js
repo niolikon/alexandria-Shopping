@@ -23,10 +23,14 @@ import { useHistory } from "react-router-dom";
 import { selectAuthentication, doLogin, doLogout } from '../../authentication/authenticationSlice';
 import { selectCartState, doCartLoad, doCartClear } from '../../purchasing/shoppingCartSlice';
 import { AccountCircle } from '@material-ui/icons';
+import Drawer from '../drawer/DrawerComponent';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
+  },
+  appBar: {
+    zIndex: theme.zIndex.modal + 1, //drawer appears as a modal
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -146,6 +150,7 @@ export default function Header() {
   const history = useHistory();
 
   const searchRef = useRef({});
+  const drawerControls = useRef({});
 
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const isMenuOpen = Boolean(menuAnchorEl);
@@ -237,7 +242,8 @@ export default function Header() {
   const renderUserMenu = (authentication.isAuthenticated) ? (
     <Menu
       anchorEl={menuAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       id={menuId}
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -250,7 +256,8 @@ export default function Header() {
   ) : (
     <Menu
       anchorEl={menuAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       id={menuId}
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -265,7 +272,8 @@ export default function Header() {
   const renderMobileMenu = (authentication.isAuthenticated) ? (
     <Menu
       anchorEl={mobileMenuAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       id={mobileMenuId}
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -309,7 +317,8 @@ export default function Header() {
   ) : (
     <Menu
       anchorEl={mobileMenuAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       id={mobileMenuId}
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -334,13 +343,14 @@ export default function Header() {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
+      <AppBar position="sticky" className={classes.appBar}>
         <Toolbar>
           <IconButton
             edge="start"
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
+            onClick={() => drawerControls.current.toggle()}
           >
             <MenuIcon />
           </IconButton>
@@ -410,6 +420,7 @@ export default function Header() {
           </div>
         </Fade>
       </Modal>
+      <Drawer controls={drawerControls} />
     </div>
   );
 }
