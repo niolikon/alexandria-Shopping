@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,6 +18,7 @@ import { Typography } from '@material-ui/core';
 import { selectAuthentication } from '../../authentication/authenticationSlice';
 import BackButton from '../../commons/components/BackButtonComponent';
 import SnackBar from '../../commons/components/SnackBarComponent';
+import { Loader } from '../../commons/components/LoaderComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -178,34 +178,7 @@ function BookView(props) {
 
 }
 
-function BookLoader(props) {
-    let detailsState = props.loaderState;
-
-    if (detailsState.isLoadInprogress) {
-        return (
-            <div className="col">
-                <CircularProgress />
-            </div>
-        );
-    }
-    else if (detailsState.errMess) {
-        return (
-            <div className="col">
-                <h2>{detailsState.errMess}</h2>
-            </div>
-        );
-    }
-    else {
-        return (
-            <React.Fragment>
-                {props.children}
-            </React.Fragment>
-        );
-    };
-}
-
 function BookDetail(props) {
-
     let { id } = useParams();
   
     const dispatch = useDispatch();
@@ -218,9 +191,9 @@ function BookDetail(props) {
     return(
         <div className="container">
             <div className="row row-content">
-                <BookLoader loaderState={detailsState}>
-                    <BookView book={detailsState.book}/>
-                </BookLoader>
+                <Loader isLoading={detailsState.isLoadInprogress} errMess={detailsState.errMess}>
+                    <BookView book={detailsState.book} />
+                </Loader>
             </div>
             <div className="row back-button-container">
                 <BackButton></BackButton>
