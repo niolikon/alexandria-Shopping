@@ -8,7 +8,6 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import config from '../../../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Media } from 'reactstrap';
@@ -16,6 +15,7 @@ import { selectSearchState } from '../../inventory/inventorySearchSlice';
 import { selectAuthentication } from '../../authentication/authenticationSlice';
 import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
 import SnackBar from '../../commons/components/SnackBarComponent';
+import { Loader } from '../../commons/components/LoaderComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -108,30 +108,6 @@ function ProductItem({product, snackBar}) {
     );
 }
 
-function ResultLoader(props) {
-    let searchState = props.loaderState;
-
-    if (searchState.isSearchInprogress) {
-        return (
-            <CircularProgress />
-        );
-    }
-    else if (searchState.errMess) {
-        return (
-            <h2>{searchState.errMess}</h2>
-        );
-    }
-    else {
-        return (
-            <Media list>
-                <Stagger in>
-                    {props.children}
-                </Stagger>
-            </Media>
-        );
-    };
-}
-
 function ProductSearch(props) {
     
     const searchState = useSelector(selectSearchState);
@@ -149,9 +125,13 @@ function ProductSearch(props) {
     });
 
     let pageContents = (searchState.isSearchRequested)? (
-        <ResultLoader loaderState={searchState}>
-            {searchResults}
-        </ResultLoader>
+        <Loader isLoading={searchState.isSearchInprogress} errMess={searchState.errMess}>
+            <Media list>
+                <Stagger in>
+                    {searchResults}
+                </Stagger>
+            </Media>
+        </Loader>
     ) : (
         <h4>No search specified</h4>
     );
