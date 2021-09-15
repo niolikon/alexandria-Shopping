@@ -169,6 +169,14 @@ function Cart(props) {
         style: 'currency', 
         currency: 'EUR',
     });
+        
+    let subTotal = 0;
+    let entryCount = 0;
+
+    for (const entry of cartState.cartView.entries) {
+        subTotal += entry.productData.price * entry.quantity;
+        entryCount += entry.quantity;
+    }
     
     let cartViewHasEntries = (cartView.entries !== undefined && (cartView.entries.length > 0));
 
@@ -181,13 +189,11 @@ function Cart(props) {
         );
     });
     
-    let subTotal = 0;
-    let entryCount = 0;
-
-    for (const entry of cartState.cartView.entries) {
-        subTotal += entry.productData.price * entry.quantity;
-        entryCount += entry.quantity;
-    }
+    let cartSubtotalViewPanel = (cartViewHasEntries) ? (
+        <SubtotalView formattedSubTotal={formatter.format(subTotal)} entryCount={entryCount} />
+    ) : (
+        <React.Fragment />
+    );
 
     let cartEntryViewsPanel = (cartViewHasEntries) ? (
         <Grid container spacing={2} direction="column">
@@ -220,7 +226,7 @@ function Cart(props) {
                 <div className="col-12 col-sm-10">
                     <Loader isLoading={cartState.isViewRefreshInprogress} errMess={cartState.viewRefreshErrMess}>
                         {cartEntryViewsPanel}
-                        <SubtotalView formattedSubTotal={formatter.format(subTotal)} entryCount={entryCount} />
+                        {cartSubtotalViewPanel}
                     </Loader>
                 </div>
                 <div className="col-12 col-sm-2">
