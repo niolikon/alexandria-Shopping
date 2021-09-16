@@ -11,10 +11,14 @@ import App from './App';
 import store from './app/commons/redux/reduxStore';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
+import theme from './theme';
+import { ThemeProvider } from '@material-ui/core';
 
 ReactDOM.render(
   <Provider store={store}>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
   </Provider>,
   document.getElementById('root')
 );

@@ -30,9 +30,15 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         width: '100px'
     },
+    subtotalRow: {
+        textAlign: 'right'
+    },
+    subtotalMoney: {
+        fontWeight: 'bold'
+    }
 }));
 
-function EntryView({entry}) {
+function EntryView({entry, formatter}) {
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -47,6 +53,8 @@ function EntryView({entry}) {
         dispatch(doCartSetItemQuantity(entry.productData.id, event.target.value, (updateSuccess) => {}));
     }
 
+    let entryCost = product.price * entry.quantity;
+
     return (
         <Grid item container xs direction="row">
             <Grid item xs={12} sm={3} md={2}>
@@ -57,21 +65,16 @@ function EntryView({entry}) {
             <Grid item xs={12} sm={9} md={10}>
                 <Grid container direction="row" justifyContent="space-between" alignItems="flex-end" spacing={2}>
                     <Grid item xs={12}>
-                        <Typography gutterBottom variant="subtitle1">
+                        <Typography gutterBottom variant="h6">
                             {product.name}
                         </Typography>
                         <Typography variant="body2" gutterBottom>
                             {product.description}
                         </Typography>
                     </Grid>
-                    <Grid item xs={10}>
-                        <Typography variant="body2" color="textSecondary">
-                            {product.price}&nbsp;&euro; &times; {entry.quantity}
-                        </Typography>
-                    </Grid>
                     <Grid item xs={2}>
                         <FormControl variant="outlined" className={classes.formControl}>
-                            <InputLabel id="{entry.productData.id}-quantity-label">Change quantity</InputLabel>
+                            <InputLabel id="{entry.productData.id}-quantity-label">Quantity</InputLabel>
                             <Select
                                 labelId="{entry.productData.id}-quantity-select-label"
                                 id="{entry.productData.id}-quantity-select"
@@ -83,6 +86,30 @@ function EntryView({entry}) {
                             </Select>
                         </FormControl>
                     </Grid>
+                    <Grid item xs={2}>
+                        <Typography variant="body2" color="textSecondary" align="right">
+                            <span className={classes.subtotalMoney}>{formatter.format(entryCost)}</span>
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    );
+}
+
+function SubtotalView({formattedSubTotal, entryCount}) {
+    const classes = useStyles();
+
+    return (
+        <Grid item container xs direction="row">
+            <Grid item xs={12} sm={3} md={2}>
+                <React.Fragment></React.Fragment>
+            </Grid>
+            <Grid item xs={12} sm={9} md={10}>
+                <Grid container direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
+                    <Grid item xs={4} className={classes.subtotalRow}>
+                        Subtotal ({entryCount} items): <span className={classes.subtotalMoney}>{formattedSubTotal}</span>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
@@ -90,27 +117,21 @@ function EntryView({entry}) {
 }
 
 
-function BillView({cart}) {
+function BillView({formattedSubTotal, entryCount, cart}) {
+    const classes = useStyles();
     const history = useHistory();
 
     const handlePlaceOrder = (cart) => {
         history.push('/checkout');
     }
 
-    let subTotal = 0;
-    let entryCount = 0;
-
-    for (const entry of cart.entries) {
-        subTotal += entry.productData.price * entry.quantity;
-        entryCount += entry.quantity;
-    }
-
     if (entryCount > 0) {
         return (
             <Grid container direction="column">
                 <Grid item xs={12} sm={3} md={2}>
-                    <Typography gutterBottom variant="subtitle1">
-                        Subtotal&nbsp;({entryCount}&nbsp;items): {subTotal}&nbsp;&euro; 
+                    <Typography gutterBottom variant="subtitle1" align="center" display="block">
+                        Subtotal&nbsp;({entryCount}&nbsp;items):
+                        <span className={classes.subtotalMoney}>{formattedSubTotal}</span>
                     </Typography>
                 </Grid>
                 <Grid item xs={12} sm={9} md={10}>
@@ -143,14 +164,36 @@ function BillView({cart}) {
 function Cart(props) {
     const cartState = useSelector(selectCartState);
     const cartView = cartState.cartView;
+
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency', 
+        currency: 'EUR',
+    });
+        
+    let subTotal = 0;
+    let entryCount = 0;
+
+    for (const entry of cartState.cartView.entries) {
+        subTotal += entry.productData.price * entry.quantity;
+        entryCount += entry.quantity;
+    }
     
     let cartViewHasEntries = (cartView.entries !== undefined && (cartView.entries.length > 0));
 
     let cartEntrieViews = cartState.cartView.entries.map((entry) => {
         return (
-            <EntryView key={entry.productData.id} entry={entry} />
+            <React.Fragment>
+                <EntryView key={entry.productData.id} entry={entry} formatter={formatter}/>
+                <hr />
+            </React.Fragment>
         );
     });
+    
+    let cartSubtotalViewPanel = (cartViewHasEntries) ? (
+        <SubtotalView formattedSubTotal={formatter.format(subTotal)} entryCount={entryCount} />
+    ) : (
+        <React.Fragment />
+    );
 
     let cartEntryViewsPanel = (cartViewHasEntries) ? (
         <Grid container spacing={2} direction="column">
@@ -163,7 +206,11 @@ function Cart(props) {
     );
 
     let cartBillViewPanel = (cartViewHasEntries) ? (
-        <BillView cart={cartState.cartView}></BillView>
+        <BillView 
+            formattedSubTotal={formatter.format(subTotal)} 
+            entryCount={entryCount}
+            cart={cartState.cartView}>    
+        </BillView>
     ) : (
         <React.Fragment />
     );
@@ -179,6 +226,7 @@ function Cart(props) {
                 <div className="col-12 col-sm-10">
                     <Loader isLoading={cartState.isViewRefreshInprogress} errMess={cartState.viewRefreshErrMess}>
                         {cartEntryViewsPanel}
+                        {cartSubtotalViewPanel}
                     </Loader>
                 </div>
                 <div className="col-12 col-sm-2">
