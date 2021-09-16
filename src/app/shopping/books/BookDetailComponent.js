@@ -26,20 +26,27 @@ const useStyles = makeStyles((theme) => ({
     },
     media: {
         height: 200,
+        maxWidth: 400,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        display: 'block',
+        [theme.breakpoints.down('xs')]: {
+            height: 300,
+        },
     },
     controls: {
         display: 'flex',
         justifyContent: 'space-between'
     },
     title: {
-        padding: theme.spacing(2),
+        paddingLeft: theme.spacing(2),
         textAlign: 'justify',
         fontWeight: 'bold',
-        fontSize: 'large',
+        fontSize: 'x-large',
         color: theme.palette.text.primary,
     },
     owners: {
-        padding: theme.spacing(2),
+        paddingLeft: theme.spacing(2),
         textAlign: 'justify',
         fontSize: 'large',
         color: theme.palette.text.primary,
@@ -79,7 +86,7 @@ function ImagesCard(props) {
     }
 
     return (
-        <Card className={classes.root}>
+        <Card>
             <CardMedia
                 className={classes.media}
                 image={images[imageIdx]}
@@ -149,15 +156,15 @@ function BookView(props) {
 
     return (
         <React.Fragment>
-            <div className="col-2">
+            <div className="col-lg-2 col-md-3 col-sm-12">
                 <ImagesCard images={images} />
             </div>
-            <div className="col-10">
+            <div className="col-lg-10 col-md-9 col-sm-12">
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Paper variant="outlined">
                             <Typography className={classes.title}>{book.title}</Typography>
-                            <span className={classes.owners}>{book.author.name} {book.author.surname}</span> published by <span className={classes.owners}>{book.publisher.name}</span>
+                            <span className={classes.owners}>{book.author.name} {book.author.surname}</span> (Author) <br/> <span className={classes.owners}>{book.publisher.name}</span> (Publisher)
                         </Paper>
                     </Grid>
                     <Grid item xs={12}>
