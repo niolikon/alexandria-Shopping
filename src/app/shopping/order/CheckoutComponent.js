@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import Stepper from '@material-ui/core/Stepper';
@@ -12,6 +12,7 @@ import SummaryCartView from './SummaryCart';
 import ShipmentForm from './ShipmentForm';
 import { doOrderSetCart, doOrderSetShipmentAddress, doOrderCreate } from '../../purchasing/orderSlice';
 import { selectCartState, doCartReset } from '../../purchasing/shoppingCartSlice';
+import SnackBar from '../../commons/components/SnackBarComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
 function ProcessView({cartState}) {
     const classes = useStyles();
     const dispatch = useDispatch();
+
+    const snackBar = useRef({});
 
     const steps = ['Review your cart', 'Insert shipping information', 'Submit order'];
 
@@ -68,10 +71,16 @@ function ProcessView({cartState}) {
     const handleNext = () => {
         switch(activeStep) {
             case 2:
-                dispatch(doOrderCreate(() => {
-                    dispatch(doCartReset(() => {
-                        flagStepAsCompleted(activeStep);
-                    }));
+                dispatch(doOrderCreate((isOrderCreatedWithSuccess) => {
+                    if (isOrderCreatedWithSuccess) {
+                        dispatch(doCartReset(() => {
+                            flagStepAsCompleted(activeStep);
+                            snackBar.current.open("Order submitted successfully!");
+                        }));
+                    }
+                    else {
+                        snackBar.current.error("Order could not be submitted!");
+                    }
                 }));
                 break;
             case 1:
@@ -145,48 +154,51 @@ function ProcessView({cartState}) {
     }
 
     return (
-        <Grid container spacing={2} direction="column">
-            <Grid item>
-                <Stepper activeStep={activeStep}>
-                    {steps.map((label, index) => {
-                        const stepProps = {};
-                        if (isStepCompleted(index)) {
-                            stepProps.completed = true;
-                        }
-                        return (
-                            <Step key={label} {...stepProps}>
-                                <StepLabel>{label}</StepLabel>
-                            </Step>
-                        );
-                    })}
-                </Stepper>
-            </Grid>
-            <Grid item>
-                {processViewPanel}
-            </Grid>
-            <Grid container item direction="row">
+        <React.Fragment>
+            <Grid container spacing={2} direction="column">
                 <Grid item>
-                    <Button
-                        disabled={isBackDisabled()}
-                        onClick={handleBack}
-                        className={classes.button}
-                    >
-                        Back
-                    </Button>
+                    <Stepper activeStep={activeStep}>
+                        {steps.map((label, index) => {
+                            const stepProps = {};
+                            if (isStepCompleted(index)) {
+                                stepProps.completed = true;
+                            }
+                            return (
+                                <Step key={label} {...stepProps}>
+                                    <StepLabel>{label}</StepLabel>
+                                </Step>
+                            );
+                        })}
+                    </Stepper>
                 </Grid>
                 <Grid item>
-                    <Button
-                        disabled={isNextDisabled()}
-                        variant="contained"
-                        color="primary"
-                        onClick={handleNext}
-                        className={classes.button}
-                    >
-                        {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                    </Button>
+                    {processViewPanel}
+                </Grid>
+                <Grid container item direction="row">
+                    <Grid item>
+                        <Button
+                            disabled={isBackDisabled()}
+                            onClick={handleBack}
+                            className={classes.button}
+                        >
+                            Back
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            disabled={isNextDisabled()}
+                            variant="contained"
+                            color="primary"
+                            onClick={handleNext}
+                            className={classes.button}
+                        >
+                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
-        </Grid>
+            <SnackBar reference={snackBar}></SnackBar>
+        </React.Fragment>
     );
 }
 

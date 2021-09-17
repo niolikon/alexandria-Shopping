@@ -70,6 +70,13 @@ function ResponsiveDrawer(props) {
       <div className={classes.toolbar} />
       <Divider />
       <List>
+        <ListItem button key="home" onClick={ () => {goToLocation("/home")} }>
+          <ListItemIcon><i className="fas fa-home fa-2x"></i></ListItemIcon>
+          <ListItemText primary="Home"/>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
         <ListItem button key="products" onClick={ () => {goToLocation("/products")} }>
           <ListItemIcon><i className="fas fa-cube fa-2x"></i></ListItemIcon>
           <ListItemText primary="Products"/>

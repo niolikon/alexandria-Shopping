@@ -137,14 +137,14 @@ function BookView(props) {
         }));
     }
 
-    let isAvailable = (book.availability && book.availability > 0);
-    let availability = (isAvailable) ? (
+    let isBookAvailable = (book.availability && book.availability > 0);
+    let availability = (isBookAvailable) ? (
         book.availability + ' available in stock'
     ) : (
         'Currently not available'
     );
 
-    let addToCart = (isAvailable)? (
+    let addToCartButton = (isBookAvailable)? (
         <div className={classes.actions}>
             <Button variant="contained" onClick={() => handleAddToCart(book.id)} 
             disabled={authenticationState.isAuthenticated === false} color="primary">Add to cart</Button>
@@ -172,11 +172,11 @@ function BookView(props) {
                             <Typography className={classes.synopsis}>{book.synopsis}</Typography>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={8} md={10}>
                         <Typography className={classes.additional}>{availability}</Typography>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                        {addToCart}
+                    <Grid item xs={12} sm={4} md={2}>
+                        {addToCartButton}
                     </Grid>
                 </Grid>
             </div>

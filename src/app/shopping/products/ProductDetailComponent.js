@@ -137,14 +137,14 @@ function ProductView(props) {
         }));
     }
 
-    let isAvailable = (product.availability && product.availability > 0);
-    let availabilityLabel = (isAvailable) ? (
+    let isProductAvailable = (product.availability && product.availability > 0);
+    let availabilityLabel = (isProductAvailable) ? (
         product.availability + ' available in stock'
     ) : (
         'Currently not available'
     );
 
-    let addToCartButton = (isAvailable)? (
+    let addToCartButton = (isProductAvailable)? (
         <div className={classes.actions}>
             <Button variant="contained" onClick={() => handleAddToCart(product.id)} 
             disabled={authenticationState.isAuthenticated === false} color="primary">Add to cart</Button>
@@ -171,10 +171,10 @@ function ProductView(props) {
                             <Typography className={classes.description}>{product.description}</Typography>
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={8} md={10}>
                         <Typography className={classes.additional}>{availabilityLabel}</Typography>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4} md={2}>
                         {addToCartButton}
                     </Grid>
                 </Grid>
