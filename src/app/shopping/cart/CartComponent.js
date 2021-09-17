@@ -14,11 +14,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import config from '../../../config';
+import { Hidden } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     imageButton: {
       width: 128,
       height: 128,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      display: 'block'
     },
     imagePicture: {
       margin: 'auto',
@@ -47,7 +51,14 @@ function EntryView({entry, formatter}) {
     let imageAlt = 'Product ' + product.id;
 
     let quantityOptionValues = [...Array(entry.quantity+10).keys()];
-    let quantityOptionMenuItems = quantityOptionValues.map((number) => (<MenuItem value={String(number)}>{number}</MenuItem>));
+    let quantityOptionMenuItems = quantityOptionValues.map(
+        (number) => (
+            <MenuItem 
+                value={String(number)} 
+                key="{entry.productData.id}-quantity-option-{number}">{number}
+            </MenuItem>
+        )
+    );
 
     const handleQuantityChange = (event) => {
         dispatch(doCartSetItemQuantity(entry.productData.id, event.target.value, (updateSuccess) => {}));
@@ -65,18 +76,25 @@ function EntryView({entry, formatter}) {
             <Grid item xs={12} sm={9} md={10}>
                 <Grid container direction="row" justifyContent="space-between" alignItems="flex-end" spacing={2}>
                     <Grid item xs={12}>
-                        <Typography gutterBottom variant="h6">
-                            {product.name}
-                        </Typography>
-                        <Typography variant="body2" gutterBottom>
-                            {product.description}
-                        </Typography>
+                        <Hidden smUp>
+                            <Typography gutterBottom variant="h6" align="center">
+                                {product.name}
+                            </Typography>
+                        </Hidden>
+                        <Hidden xsDown>
+                            <Typography gutterBottom variant="h6">
+                                {product.name}
+                            </Typography>
+                            <Typography variant="body2" gutterBottom>
+                                {product.description}
+                            </Typography>
+                        </Hidden>
                     </Grid>
                     <Grid item xs={2}>
                         <FormControl variant="outlined" className={classes.formControl}>
                             <InputLabel id="{entry.productData.id}-quantity-label">Quantity</InputLabel>
                             <Select
-                                labelId="{entry.productData.id}-quantity-select-label"
+                                key="{entry.productData.id}-quantity-select-key"
                                 id="{entry.productData.id}-quantity-select"
                                 value={entry.quantity}
                                 onChange={handleQuantityChange}
@@ -127,14 +145,13 @@ function BillView({formattedSubTotal, entryCount, cart}) {
 
     if (entryCount > 0) {
         return (
-            <Grid container direction="column">
-                <Grid item xs={12} sm={3} md={2}>
-                    <Typography gutterBottom variant="subtitle1" align="center" display="block">
-                        Subtotal&nbsp;({entryCount}&nbsp;items):
-                        <span className={classes.subtotalMoney}>{formattedSubTotal}</span>
+            <Grid container direction="column" alignItems="center">
+                <Grid item xs={12}>
+                    <Typography gutterBottom variant="subtitle1">
+                        Subtotal&nbsp;({entryCount}&nbsp;items): <span className={classes.subtotalMoney}>{formattedSubTotal}</span>
                     </Typography>
                 </Grid>
-                <Grid item xs={12} sm={9} md={10}>
+                <Grid item xs={12}>
                     <Button variant="contained" color="primary" onClick={() => handlePlaceOrder(cart)}>
                         Checkout order
                     </Button>
@@ -182,15 +199,19 @@ function Cart(props) {
 
     let cartEntrieViews = cartState.cartView.entries.map((entry) => {
         return (
-            <React.Fragment>
-                <EntryView key={entry.productData.id} entry={entry} formatter={formatter}/>
+            <React.Fragment key={'fragment' + entry.productData.id}>
+                <EntryView key={'entryview' + entry.productData.id} entry={entry} formatter={formatter}/>
                 <hr />
             </React.Fragment>
         );
     });
     
     let cartSubtotalViewPanel = (cartViewHasEntries) ? (
-        <SubtotalView formattedSubTotal={formatter.format(subTotal)} entryCount={entryCount} />
+        <React.Fragment>
+            <Hidden xsDown>
+                <SubtotalView formattedSubTotal={formatter.format(subTotal)} entryCount={entryCount} />
+            </Hidden>
+        </React.Fragment>
     ) : (
         <React.Fragment />
     );

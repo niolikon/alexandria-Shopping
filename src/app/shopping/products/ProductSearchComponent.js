@@ -16,6 +16,7 @@ import { selectAuthentication } from '../../authentication/authenticationSlice';
 import { doCartAddItem } from '../../purchasing/shoppingCartSlice';
 import SnackBar from '../../commons/components/SnackBarComponent';
 import { Loader } from '../../commons/components/LoaderComponent';
+import { Hidden } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     imageButton: {
       width: 128,
       height: 128,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      display: 'block'
     },
     imagePicture: {
       margin: 'auto',
@@ -78,15 +82,22 @@ function ProductItem({product, snackBar}) {
                 <Grid item xs={12} sm={6} md={8} container>
                     <Grid item xs container direction="column" spacing={2}>
                         <Grid item xs>
-                            <Typography gutterBottom variant="subtitle1">
-                                {product.name}
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                {product.description}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                                ID: {product.id}
-                            </Typography>
+                            <Hidden smUp>
+                                <Typography variant="subtitle1" gutterBottom align="center">
+                                    {product.name}
+                                </Typography>
+                            </Hidden>
+                            <Hidden xsDown>
+                                <Typography gutterBottom variant="subtitle1">
+                                    {product.name}
+                                </Typography>
+                                <Typography variant="body2" gutterBottom>
+                                    {product.description}
+                                </Typography>
+                                <Typography variant="body2" color="textSecondary">
+                                    ID: {product.id}
+                                </Typography>
+                            </Hidden>
                         </Grid>
                     </Grid>
                 </Grid>
