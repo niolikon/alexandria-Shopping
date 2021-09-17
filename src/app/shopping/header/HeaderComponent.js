@@ -5,6 +5,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
+import Button from '@mui/material/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
-  title: {
+  logoButton: {
     display: 'none',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
@@ -354,9 +355,11 @@ export default function Header() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap onClick={onLogoClick}>
-            Alexandria
+          <Button variant="text" color="inherit" className={classes.logoButton} style={{textTransform: 'none'}}>
+          <Typography variant="h6" noWrap onClick={onLogoClick}>
+          Alexandria
           </Typography>
+          </Button>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
