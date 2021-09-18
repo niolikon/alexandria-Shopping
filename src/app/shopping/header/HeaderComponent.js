@@ -25,6 +25,7 @@ import { selectAuthentication, doLogin, doLogout } from '../../authentication/au
 import { selectCartState, doCartLoad, doCartClear } from '../../purchasing/shoppingCartSlice';
 import { AccountCircle } from '@material-ui/icons';
 import Drawer from '../drawer/DrawerComponent';
+import { Hidden } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -35,12 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
-  },
-  logoButton: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
   },
   search: {
     position: 'relative',
@@ -355,11 +350,13 @@ export default function Header() {
           >
             <MenuIcon />
           </IconButton>
-          <Button variant="text" color="inherit" className={classes.logoButton} style={{textTransform: 'none'}}>
-          <Typography variant="h6" noWrap onClick={onLogoClick}>
-          Alexandria
-          </Typography>
-          </Button>
+          <Hidden xsDown>
+            <Button variant="text" color="inherit" style={{textTransform: 'none' }}>
+              <Typography variant="h6" noWrap onClick={onLogoClick}>
+                Alexandria
+              </Typography>
+            </Button>
+          </Hidden>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
